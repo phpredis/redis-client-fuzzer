@@ -1,0 +1,18 @@
+{
+    "name": "phpredis/redis-client-fuzzer",
+    "description": "A fuzzer for Redis clients",
+    "type": "project",
+    "license": "BSD",
+    "autoload": {
+        "psr-4": {
+            "Phpredis\\RedisClientFuzzer\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "michael-grunder",
+            "email": "michael.grunder@gmail.com"
+        }
+    ],
+    "require": {}
+}
