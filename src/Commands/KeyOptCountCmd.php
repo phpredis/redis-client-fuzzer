@@ -2,15 +2,14 @@
 
 namespace Phpredis\RedisClientFuzzer\Commands;
 
-require_once __DIR__ . '/Cmd.php';
-
-class LPopCmd extends Cmd {
-    use Traits\WriteCmd;
-    use Traits\ListCmd;
+abstract class KeyOptCountCmd extends Cmd {
+    public function get_count() {
+        return rand(1, rand(0, $this->context->mems()));
+    }
 
     public function args(): array {
         if (rand(1, 2) == 1) {
-            return [$this->get_key(), rand(1, $this->context->mems())];
+            return [$this->get_key(), $this->get_count()];
         } else {
             return [$this->get_key()];
         }

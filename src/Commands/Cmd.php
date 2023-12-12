@@ -14,7 +14,7 @@ abstract class Cmd {
     public const FLUSH_CMD = 8;
 
     public const ANY_TYPE = [
-        'string', 'list', 'hash', 'set', 'zset'
+        'num', 'geo', 'string', 'list', 'hash', 'set', 'stream', 'zset'
     ];
 
     public function __construct(Context $context) {
@@ -76,7 +76,7 @@ abstract class Cmd {
     public function get_keys() {
         $res = [];
 
-        for ($i = 0; $i < rand(0, $this->context->keys() - 1); $i++) {
+        for ($i = 0; $i < rand(1, $this->context->keys() - 1); $i++) {
             $res[] = $this->get_key();
         }
 
@@ -86,7 +86,7 @@ abstract class Cmd {
     public function get_mems() {
         $res = [];
 
-        for ($i = 0; $i < rand(0, $this->context->mems() - 1); $i++) {
+        for ($i = 0; $i < rand(1, $this->context->mems() - 1); $i++) {
             $res[] = $this->get_mem();
         }
 

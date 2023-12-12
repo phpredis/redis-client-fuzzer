@@ -8,8 +8,6 @@ class CmdLoader {
 
         $path = __DIR__ . '/Commands';
 
-        var_dump(__NAMESPACE__);
-
         foreach (new \DirectoryIterator($path) as $file) {
             if ($file->isFile() && $file->getExtension() === 'php') {
                 $class_name = $file->getBasename('.php');

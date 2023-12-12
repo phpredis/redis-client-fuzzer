@@ -2,17 +2,15 @@
 
 namespace Phpredis\RedisClientFuzzer\Commands;
 
-require_once __DIR__ . '/Cmd.php';
-
-class LPopCmd extends Cmd {
+abstract class IncrDecrCmd extends Cmd {
+    use Traits\NumCmd;
     use Traits\WriteCmd;
-    use Traits\ListCmd;
 
     public function args(): array {
         if (rand(1, 2) == 1) {
-            return [$this->get_key(), rand(1, $this->context->mems())];
-        } else {
             return [$this->get_key()];
+        } else {
+            return [$this->get_key(), rand(-1 * pow(2, 24), pow(2, 24))];
         }
     }
 
