@@ -2,9 +2,7 @@
 
 namespace Phpredis\RedisClientFuzzer\Commands;
 
-require_once __DIR__ . '/KeyCmd.php';
-
-class SMembersCmd extends KeyCmd {
+class SIsMemberCmd extends KeyMemCmd {
     use Traits\ReadCmd;
     use Traits\SetCmd;
 }

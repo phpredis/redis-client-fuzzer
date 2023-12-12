@@ -8,10 +8,14 @@ abstract class Cmd {
     protected $context;
     private $cmd_name = NULL;
 
-    public const READ_CMD  = 0;
-    public const WRITE_CMD = 1;
-    public const DEL_CMD   = 2;
-    public const FLUSH_CMD = 4;
+    public const READ_CMD  = 1;
+    public const WRITE_CMD = 2;
+    public const DEL_CMD   = 4;
+    public const FLUSH_CMD = 8;
+
+    public const ANY_TYPE = [
+        'string', 'list', 'hash', 'set', 'zset'
+    ];
 
     public function __construct(Context $context) {
         $this->context = $context;
@@ -79,11 +83,21 @@ abstract class Cmd {
         return $res;
     }
 
+    public function get_mems() {
+        $res = [];
+
+        for ($i = 0; $i < rand(0, $this->context->mems() - 1); $i++) {
+            $res[] = $this->get_mem();
+        }
+
+        return $res;
+    }
+
     public function cmd(): string {
         if ($this->cmd_name === NULL) {
             $full = get_class($this);
             $className = substr($full, strrpos($full, '\\') + 1);
-            $this->cmd_name = substr($className, 0, -3);
+            $this->cmd_name = strtoupper(substr($className, 0, -3));
         }
 
         return $this->cmd_name;
@@ -101,4 +115,12 @@ abstract class Cmd {
     abstract public function type(): mixed;
     abstract public function args(): array;
     abstract public function raw_args(): array;
+
+    public function cluster_args(): array {
+        return $this->args();
+    }
+
+    public function cluster_raw_args(): array {
+        return $this->cluster_args();
+    }
 }
