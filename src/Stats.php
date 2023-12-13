@@ -10,6 +10,7 @@ class Stats {
     public $errors = 0;
     public $true = 0;
     public $int = 0;
+    public $double = 0;
     public $null = 0;
     public $string = 0;
     public $strlen = 0;
@@ -32,6 +33,8 @@ class Stats {
             $this->null++;
         } else if (is_int($res)) {
             $this->int++;
+        } else if (is_float($res)) {
+            $this->double++;
         } else if (is_array($res)) {
             $this->elements += count($res);
         } else if (is_string($res)) {
@@ -39,41 +42,6 @@ class Stats {
             $this->strlen += strlen($res);
         }
     }
-
-//    public function stats_string() {
-//        $arr = [
-//            'count' => $this->count,
-//            'errors' => $this->errors,
-//            'false' => $this->false,
-//            'true' => $this->true,
-//            'int' => $this->int,
-//            'null' => $this->null,
-//            'string' => $this->string,
-//            'strlen' => $this->strlen,
-//        ];
-//
-//        foreach ($arr as $k => $v) {
-//            $eles[] = str_pad("$k = $v", 12);
-//        }
-//
-//        return implode(', ', $eles);
-//    }
-
-//    public static function sum(array $stats): Stats {
-//        $res = new Stats;
-//
-//        foreach ($stats as $obj) {
-//            $res->count += $obj->count;
-//            $res->errors += $obj->errors;
-//            $res->false += $obj->false;
-//            $res->true += $obj->true;
-//            $res->int += $obj->int;
-//            $res->null += $obj->null;
-//            $res->strlen += $obj->strlen;
-//        }
-//
-//        return $res;
-//    }
 
     public function as_array(): array {
         return [
@@ -83,6 +51,7 @@ class Stats {
             'FALSE' => $this->false,
             'TRUE' => $this->true,
             'INT' => $this->int,
+            'DBL' => $this->double,
             'NULL' => $this->null,
             'STRING' => $this->string,
             'STRLEN' => $this->strlen,
@@ -101,6 +70,7 @@ class Stats {
         $table->addField('FALSE', 'FALSE');
         $table->addField('TRUE', 'TRUE');
         $table->addField('INT', 'INT');
+        $table->addField('DBL', 'DBL');
         $table->addField('NULL', 'NULL');
         $table->addField('STRING', 'STRING');
         $table->addField('STRLEN', 'STRLEN');

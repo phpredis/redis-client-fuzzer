@@ -61,6 +61,10 @@ abstract class Cmd {
         }
     }
 
+    function rng_float($min = 0, $max = 1) {
+        return $min + mt_rand() / mt_getrandmax() * ($max - $min);
+    }
+
     public function get_key(int $id): string {
         return sprintf("%s:%d", $this->key_type(), $id);
     }
@@ -113,7 +117,6 @@ abstract class Cmd {
         return $res;
     }
 
-
     /* Return two keys that will live in the same slot */
     public function rng_slot_key_pair(): array {
         $key1 = $this->rng_key();
@@ -124,7 +127,6 @@ abstract class Cmd {
 
         return $keys;
     }
-
 
     public function rng_slot_keys(): array {
         if ($this->keys_by_slot === NULL)
