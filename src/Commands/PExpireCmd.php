@@ -4,7 +4,7 @@ namespace Phpredis\RedisClientFuzzer\Commands;
 
 class PExpireCmd extends ExpireGenericCmd {
     public function get_tty(): int {
-        return rand(0, 60) * 1000;
+        return rand(0, 60000);
     }
 
     public function args(): array {

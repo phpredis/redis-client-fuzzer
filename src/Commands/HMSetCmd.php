@@ -8,7 +8,7 @@ class HMSetCmd extends Cmd {
 
     protected function key_vals(): array {
         $kv = [];
-        foreach ($this->get_mems() as $mem) {
+        foreach ($this->rng_mems() as $mem) {
             $kv[$mem] = $this->get_val();
         }
         return $kv;

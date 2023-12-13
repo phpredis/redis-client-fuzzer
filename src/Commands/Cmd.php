@@ -139,7 +139,7 @@ abstract class Cmd {
         return Crc16::hash($key) % 16384;
     }
 
-    public function get_mems() {
+    public function rng_mems() {
         $res = [];
 
         for ($i = 0; $i < rand(1, $this->context->mems() - 1); $i++) {

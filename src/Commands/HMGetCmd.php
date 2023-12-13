@@ -7,10 +7,10 @@ class HMGetCmd extends Cmd {
     use Traits\HashCmd;
 
     public function args(): array {
-        return [$this->rng_key(), $this->get_mems()];
+        return [$this->rng_key(), $this->rng_mems()];
     }
 
     public function raw_args(): array {
-        return [$this->rng_key(), ...$this->get_mems()];
+        return [$this->rng_key(), ...$this->rng_mems()];
     }
 }
