@@ -1,7 +1,9 @@
 #!/bin/bash
 
+# WIP:  A helper script to reshard a cluster randomly while running.
+
 CLUSTER_HOST="127.0.0.1"
-CLUSTER_PORT=7001
+CLUSTER_PORT=7000
 
 # Connect to any node in the cluster to get the list of nodes
 CLUSTER_INFO=$(redis-cli -h "$CLUSTER_HOST" -p "$CLUSTER_PORT" cluster nodes|grep master)
