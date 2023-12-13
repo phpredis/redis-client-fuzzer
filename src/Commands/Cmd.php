@@ -104,7 +104,8 @@ abstract class Cmd {
     }
 
     public function exec($client): mixed {
-        return call_user_func_array([$client, $this->cmd()], $this->args());
+        $args = $this->args();
+        return call_user_func_array([$client, $this->cmd()], $args);
     }
 
     public function raw_exec($client): mixed {

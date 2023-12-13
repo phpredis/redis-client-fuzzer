@@ -4,7 +4,6 @@ namespace Phpredis\RedisClientFuzzer\Commands;
 
 abstract class RangeCmd extends Cmd {
     use Traits\ReadCmd;
-    use Traits\StringCmd;
 
     protected function rng_range() {
         // Define the range for the random numbers
