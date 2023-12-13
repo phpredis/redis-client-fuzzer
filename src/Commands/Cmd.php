@@ -113,6 +113,19 @@ abstract class Cmd {
         return $res;
     }
 
+
+    /* Return two keys that will live in the same slot */
+    public function rng_slot_key_pair(): array {
+        $key1 = $this->rng_key();
+        $key2 = sprintf("{%s}-dst", $key1);
+        $keys = [$key1, $key2];
+
+        shuffle($keys);
+
+        return $keys;
+    }
+
+
     public function rng_slot_keys(): array {
         if ($this->keys_by_slot === NULL)
             $this->keys_by_slot = $this->calc_slot_keys();
