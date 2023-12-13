@@ -1,3 +1,8 @@
 # Redis Client Fuzzer
 
-## This is a WIP project to fuzz test PhpRedis and other Redis clients that support the Phpredis api.
+### Project to help fuzz test PHP Redis clients that support PhpRedis' API.
+
+```bash
+# Exclude DEL and EXISTS for now since they will have cross-slot errors
+php src/fuzz.php --exclude del,exists
+```
