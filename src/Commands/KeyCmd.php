@@ -2,8 +2,6 @@
 
 namespace Phpredis\RedisClientFuzzer\Commands;
 
-require_once __DIR__ . '/Cmd.php';
-
 abstract class KeyCmd extends Cmd {
     public function args(): array {
         return [$this->rng_key()];
