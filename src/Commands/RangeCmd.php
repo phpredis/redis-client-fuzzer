@@ -5,11 +5,8 @@ namespace Phpredis\RedisClientFuzzer\Commands;
 abstract class RangeCmd extends Cmd {
     use Traits\ReadCmd;
 
-    protected function rng_range() {
-        // Define the range for the random numbers
-        // Assuming -100 to 100 as an example range
-        $min = $this->context->mems() * -1;
-        $max = $this->context->mems();
+    protected function rng_range($max) {
+        $min = $max * -1;
 
         // Generate two random numbers for start and end
         $start = rand($min, $max);

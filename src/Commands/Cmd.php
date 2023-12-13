@@ -66,11 +66,15 @@ abstract class Cmd {
     }
 
     public function get_val(): mixed {
-        if ($this->context->serialize()) {
-            return [uniqid(), [1, 2, 3, [uniqid()]]];
-        } else {
-            return uniqid();
-        }
+        $dlen = $this->context->strlen() / 2;
+        if ($dlen % 2 != 0)
+            $dlen++;
+
+        $data = bin2hex(random_bytes($dlen));
+        if ( ! $this->context->serialize())
+            return $data;
+        else
+            return str_split($data, $this->context->strlen() / 4);
     }
 
     public function get_keys() {
@@ -103,8 +107,14 @@ abstract class Cmd {
         return $this->cmd_name;
     }
 
+    protected function is_cluster($client) {
+        return ($client InstanceOf \Relay\Cluster) ||
+               ($client InstanceOf \RedisCluster);
+    }
+
     public function exec($client): mixed {
-        $args = $this->args();
+        $args = $this->is_cluster($client) ? $this->cluster_args() : $this->args();
+
         if ($this->context->dump()) {
             printf("call_user_func_array([%s, '%s'], %s);\n",
                    '$rc', $this->cmd(), var_export($args, true));

@@ -9,7 +9,7 @@ class HMSetCmd extends Cmd {
     protected function key_vals(): array {
         $kv = [];
         foreach ($this->get_mems() as $mem) {
-            $kv[$mem] = uniqid();
+            $kv[$mem] = $this->get_val();
         }
         return $kv;
     }

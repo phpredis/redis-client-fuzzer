@@ -5,18 +5,22 @@ namespace Phpredis\RedisClientFuzzer\Commands;
 class Context {
     private int $keys;
     private int $mems;
+    private int $strlen;
     private bool $serialize;
     private array $knobs;
     private bool $dump;
 
     public function __construct(int $keys, int $mems, float $wrongtype, float $write,
                                 float $del, float $flush, float $raw, bool $serialize,
-                                bool $dump)
+                                bool $dump, int $strlen)
     {
         $this->keys = $keys;
         $this->mems = $mems;
         $this->serialize = $serialize;
         $this->dump = $dump;
+        $this->strlen = max(10, $strlen);
+        if ($this->strlen % 2 != 0)
+            $this->strlen++;
 
         $this->knobs = [
             'wrongtype' => $wrongtype,
@@ -41,6 +45,10 @@ class Context {
 
     public function serialize(): bool {
         return $this->serialize;
+    }
+
+    public function strlen(): int {
+        return $this->strlen;
     }
 
     public function rng_pick(string|float $weight): bool {

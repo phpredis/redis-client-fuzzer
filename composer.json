@@ -14,5 +14,7 @@
             "email": "michael.grunder@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "jc21/clitable": "^1.3"
+    }
 }

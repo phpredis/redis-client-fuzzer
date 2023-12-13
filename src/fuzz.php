@@ -20,14 +20,27 @@ $class = strtolower($opt['class'] ?? 'relay');
 $dump = isset($opt['dump']);
 $exit_on_error = isset($opt['exit-on-error']);
 
-$context = new Commands\Context(100, 100, 0, .1, .1, .1, 0, false, $dump);
+$client = new \Relay\Relay($host, $port);
+$cluster = $client->rawCommand('cluster', 'info') !== false;
+
+if ($cluster) {
+    if ($class != 'redis') {
+        $client = new \Relay\Cluster(NULL, ["$host:$port"]);
+    } else {
+        $client = new \RedisCluster(NULL, ["$host:$port"]);
+    }
+} else {
+    if ($class != 'redis') {
+        $client = new \Relay\Relay($host, $port);
+    } else {
+        $client = new \Redis;
+        $client->connect($host, $port);
+    }
+}
+
+$context = new Commands\Context(100, 100, 0, .1, .1, .1, 0, false, $dump, 10);
 $loader = new CmdLoader;
 
-if ($class != 'redis') {
-    $rc = new \Relay\Cluster(NULL, ["$host:$port"]);
-} else {
-    $rc = new \RedisCluster(NULL, ["$host:$port"]);
-}
 
 $include = array_map(function ($v) { return trim(strtoupper($v)); }, $include);
 $exclude = array_map(function ($v) { return trim(strtoupper($v)); }, $exclude);
@@ -52,44 +65,41 @@ if ( ! $cmds) {
     exit(1);
 }
 
-echo "    Class: " . get_class($rc) . "\n";
+echo "    Class: " . get_class($client) . "\n";
 echo "Seed Node: $host:$port\n";
 echo "  Exclude: " . ($opt['exclude'] ?? '') . "\n";
 echo "  Include: " . ($opt['include'] ?? '') . "\n";
 echo " RNG Seed: " . $seed . "\n";
+echo "  Cluster: " . ($cluster ? 'yes' : 'no') . "\n";
 echo "     CMDS: " . implode(',', array_keys($cmds)) . "\n";
 
 srand($seed);
 
 $returns = [];
 $st = microtime(true);
-$on = 0;
 
 while (true) {
     $obj = $cmds[array_rand($cmds)];
 
     $cmdname = $obj->cmd();
 
-    $res = $obj->exec($rc);
-    if ($exit_on_error && $rc->getLastError()) {
-        fprintf(STDERR, "Error({$obj->cmd()}): {$rc->getLastError()}\n");
+    $res = $obj->exec($client);
+    if ($exit_on_error && $client->getLastError()) {
+        fprintf(STDERR, "Error({$obj->cmd()}): {$client->getLastError()}\n");
         exit(1);
     }
 
     if ( ! isset($returns[$cmdname]))
-        $returns[$cmdname] = new Stats;
-    $returns[$cmdname]->inc($res, $rc->getLastError());
-    $rc->clearLastError();
+        $returns[$cmdname] = new Stats($cmdname);
+    $returns[$cmdname]->inc($res, $client->getLastError());
+    $client->clearLastError();
 
     if (($et = microtime(true)) - $st > 1.0) {
-        ++$on;
-
-        $agg = Stats::sum($returns);
-        fprintf(STDERR, "%s %s\n", str_pad("TOTAL: $on", 15), $agg->stats_string());
-        foreach ($returns as $cmd => $stats) {
-            fprintf(STDERR, str_pad($cmd, 15) . ' ' . $stats->stats_string() . "\n");
-        }
-        fprintf(STDERR, "\n");
+        system('clear');
+        ksort($returns);
+        $stats = array_map(function ($v) { return $v->as_array(); }, $returns);
+        $table = Stats::get_table($stats);
+        $table->display();
         $st = $et;
     }
 }
