@@ -63,6 +63,7 @@ srand($seed);
 
 $returns = [];
 $st = microtime(true);
+$on = 0;
 
 while (true) {
     $obj = $cmds[array_rand($cmds)];
@@ -81,9 +82,14 @@ while (true) {
     $rc->clearLastError();
 
     if (($et = microtime(true)) - $st > 1.0) {
+        ++$on;
+
+        $agg = Stats::sum($returns);
+        fprintf(STDERR, "%s %s\n", str_pad("TOTAL: $on", 15), $agg->stats_string());
         foreach ($returns as $cmd => $stats) {
             fprintf(STDERR, str_pad($cmd, 15) . ' ' . $stats->stats_string() . "\n");
         }
+        fprintf(STDERR, "\n");
         $st = $et;
     }
 }

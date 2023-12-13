@@ -46,5 +46,21 @@ class Stats {
 
         return implode(', ', $eles);
     }
+
+    public static function sum(array $stats): Stats {
+        $res = new Stats;
+
+        foreach ($stats as $obj) {
+            $res->count += $obj->count;
+            $res->errors += $obj->errors;
+            $res->false += $obj->false;
+            $res->true += $obj->true;
+            $res->int += $obj->int;
+            $res->null += $obj->null;
+            $res->strlen += $obj->strlen;
+        }
+
+        return $res;
+    }
 }
 
