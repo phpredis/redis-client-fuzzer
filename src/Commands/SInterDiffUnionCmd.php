@@ -2,12 +2,12 @@
 
 namespace Phpredis\RedisClientFuzzer\Commands;
 
-class SetCmd extends Cmd {
-    use Traits\WriteCmd;
-    use Traits\StringCmd;
+abstract class SInterDiffUnionCmd extends Cmd {
+    use Traits\ReadCmd;
+    use Traits\SetCmd;
 
     public function args(): array {
-        return [$this->rng_key(), $this->get_val()];
+        return $this->rng_slot_keys();
     }
 
     public function raw_args(): array {

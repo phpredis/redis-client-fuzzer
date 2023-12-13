@@ -8,11 +8,13 @@ use Phpredis\RedisClientFuzzer\CmdLoader;
 use Phpredis\RedisClientFuzzer\Stats;
 
 $opt = getopt('', [
-    'class:', 'host:', 'port:', 'include:', 'exclude:', 'seed:', 'dump', 'exit-on-error'
+    'keys:', 'mems:', 'class:', 'host:', 'port:', 'include:', 'exclude:', 'seed:', 'dump', 'exit-on-error'
 ]);
 
 $host = $opt['host'] ?? 'localhost';
 $port = $opt['port'] ?? 7000;
+$keys = $opt['keys'] ?? 1000;
+$mems = $opt['mems'] ?? 100;
 $include = array_filter(explode(',', $opt['include'] ?? ''));
 $exclude = array_filter(explode(',', $opt['exclude'] ?? ''));
 $seed = $opt['seed'] ?? hrtime(true);
@@ -38,7 +40,7 @@ if ($cluster) {
     }
 }
 
-$context = new Commands\Context(100, 100, 0, .1, .1, .1, 0, false, $dump, 10);
+$context = new Commands\Context($keys, $mems, 0, .1, .1, .1, 0, false, $dump, 10);
 $loader = new CmdLoader;
 
 
@@ -71,6 +73,8 @@ echo "  Exclude: " . ($opt['exclude'] ?? '') . "\n";
 echo "  Include: " . ($opt['include'] ?? '') . "\n";
 echo " RNG Seed: " . $seed . "\n";
 echo "  Cluster: " . ($cluster ? 'yes' : 'no') . "\n";
+echo "     Keys: " . number_format($keys) . "\n";
+echo "     Mems: " . number_format($mems) . "\n";
 echo "     CMDS: " . implode(',', array_keys($cmds)) . "\n";
 
 srand($seed);
@@ -84,6 +88,7 @@ while (true) {
     $cmdname = $obj->cmd();
 
     $res = $obj->exec($client);
+
     if ($exit_on_error && $client->getLastError()) {
         fprintf(STDERR, "Error({$obj->cmd()}): {$client->getLastError()}\n");
         exit(1);

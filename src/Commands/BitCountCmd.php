@@ -13,7 +13,7 @@ class BitCountCmd extends RangeCmd {
             $maxlen *= 8;
 
         list($s, $e) = $this->rng_range($maxlen);
-        return [$this->get_key(), $s, $e, $by_bit];
+        return [$this->rng_key(), $s, $e, $by_bit];
     }
 
     public function raw_args(): array {

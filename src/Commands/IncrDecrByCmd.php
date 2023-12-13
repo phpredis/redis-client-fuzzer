@@ -10,7 +10,7 @@ abstract class IncrDecrByCmd extends Cmd {
     }
 
     public function args(): array {
-        return [$this->get_key(), $this->value()];
+        return [$this->rng_key(), $this->value()];
     }
 
     public function raw_args(): array {

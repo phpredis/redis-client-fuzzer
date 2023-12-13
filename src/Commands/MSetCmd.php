@@ -8,7 +8,7 @@ class MSetCmd extends Cmd {
 
     public function get_key_vals(): array {
         $kv = [];
-        foreach ($this->get_keys() as $key) {
+        foreach ($this->rng_keys() as $key) {
             $kv[$key] = $this->get_val();
         }
         return $kv;

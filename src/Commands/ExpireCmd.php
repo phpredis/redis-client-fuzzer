@@ -2,16 +2,16 @@
 
 namespace Phpredis\RedisClientFuzzer\Commands;
 
-abstract class KeyOptCountCmd extends Cmd {
-    public function get_count() {
-        return rand(1, rand(0, $this->context->mems()));
+class ExpireCmd extends ExpireGenericCmd {
+    public function get_tty(): int {
+        return rand(0, 60);
     }
 
     public function args(): array {
         if (rand(1, 2) == 1) {
-            return [$this->rng_key(), $this->get_count()];
+            return [$this->rng_key(), $this->get_tty(), $this->rng_mode()];
         } else {
-            return [$this->rng_key()];
+            return [$this->rng_key(), $this->get_tty()];
         }
     }
 

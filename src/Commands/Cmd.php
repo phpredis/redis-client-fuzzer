@@ -4,9 +4,13 @@ namespace Phpredis\RedisClientFuzzer\Commands;
 
 require_once __DIR__ . '/Context.php';
 
+use Phpredis\RedisClientFuzzer\Crc16;
+
 abstract class Cmd {
     protected $context;
     private $cmd_name = NULL;
+
+    private $keys_by_slot = NULL;
 
     public const READ_CMD  = 1;
     public const WRITE_CMD = 2;
@@ -57,12 +61,20 @@ abstract class Cmd {
         }
     }
 
-    public function get_mem(): string {
-        return sprintf("%s:%d", $this->mem_type(), rand(0, $this->context->mems() - 1));
+    public function get_key(int $id): string {
+        return sprintf("%s:%d", $this->key_type(), $id);
     }
 
-    public function get_key(): string {
-        return sprintf("%s:%d", $this->key_type(), rand(0, $this->context->keys() - 1));
+    public function get_mem(int $id): string {
+        return sprintf("%s:%d", $this->mem_type(), $id);
+    }
+
+    public function rng_mem(): string {
+        return $this->get_mem(rand(0, $this->context->mems() - 1));
+    }
+
+    public function rng_key(): string {
+        return $this->get_key(rand(0, $this->context->keys() - 1));
     }
 
     public function get_val(): mixed {
@@ -77,21 +89,46 @@ abstract class Cmd {
             return str_split($data, $this->context->strlen() / 4);
     }
 
-    public function get_keys() {
+    public function rng_keys(): array {
         $res = [];
 
+        $count = rand(1, $this->context->keys() - 1);
+        $ids = range(0, $count - 1);
+
         for ($i = 0; $i < rand(1, $this->context->keys() - 1); $i++) {
-            $res[] = $this->get_key();
+            $res[] = $this->rng_key();
         }
 
         return $res;
+    }
+
+    private function calc_slot_keys(): array {
+        $res = [];
+
+        for ($i = 0; $i < $this->context->keys(); $i++) {
+            $key = $this->get_key($i);
+            $res[$this->get_slot($key)][] = $key;
+        }
+
+        return $res;
+    }
+
+    public function rng_slot_keys(): array {
+        if ($this->keys_by_slot === NULL)
+            $this->keys_by_slot = $this->calc_slot_keys();
+
+        return $this->keys_by_slot[array_rand($this->keys_by_slot)];
+    }
+
+    private function get_slot($key) {
+        return Crc16::hash($key) % 16384;
     }
 
     public function get_mems() {
         $res = [];
 
         for ($i = 0; $i < rand(1, $this->context->mems() - 1); $i++) {
-            $res[] = $this->get_mem();
+            $res[] = $this->rng_mem();
         }
 
         return $res;

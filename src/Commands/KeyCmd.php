@@ -6,7 +6,7 @@ require_once __DIR__ . '/Cmd.php';
 
 abstract class KeyCmd extends Cmd {
     public function args(): array {
-        return [$this->get_key()];
+        return [$this->rng_key()];
     }
 
     public function raw_args(): array {

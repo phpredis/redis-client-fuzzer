@@ -13,6 +13,7 @@ class Stats {
     public $null = 0;
     public $string = 0;
     public $strlen = 0;
+    public $elements = 0;
 
     public function __construct($cmd) {
         $this->cmd = $cmd;
@@ -31,6 +32,8 @@ class Stats {
             $this->null++;
         } else if (is_int($res)) {
             $this->int++;
+        } else if (is_array($res)) {
+            $this->elements += count($res);
         } else if (is_string($res)) {
             $this->string++;
             $this->strlen += strlen($res);
@@ -83,6 +86,7 @@ class Stats {
             'NULL' => $this->null,
             'STRING' => $this->string,
             'STRLEN' => $this->strlen,
+            'ELEMENTS' => $this->elements,
         ];
     }
 
@@ -100,6 +104,7 @@ class Stats {
         $table->addField('NULL', 'NULL');
         $table->addField('STRING', 'STRING');
         $table->addField('STRLEN', 'STRLEN');
+        $table->addField('ELEMENTS', 'ELEMENTS');
         $table->injectData($data);
 
         return $table;

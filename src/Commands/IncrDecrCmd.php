@@ -8,9 +8,9 @@ abstract class IncrDecrCmd extends Cmd {
 
     public function args(): array {
         if (rand(1, 2) == 1) {
-            return [$this->get_key()];
+            return [$this->rng_key()];
         } else {
-            return [$this->get_key(), rand(-1 * pow(2, 24), pow(2, 24))];
+            return [$this->rng_key(), rand(-1 * pow(2, 24), pow(2, 24))];
         }
     }
 

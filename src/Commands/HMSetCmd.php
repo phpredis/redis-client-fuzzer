@@ -15,10 +15,10 @@ class HMSetCmd extends Cmd {
     }
 
     public function args(): array {
-        return [$this->get_key(), $this->key_vals()];
+        return [$this->rng_key(), $this->key_vals()];
     }
 
     public function raw_args(): array {
-        return [$this->get_key(), ...$this->key_vals()];
+        return [$this->rng_key(), ...$this->key_vals()];
     }
 }

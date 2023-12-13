@@ -10,9 +10,9 @@ class LPopCmd extends Cmd {
 
     public function args(): array {
         if (rand(1, 2) == 1) {
-            return [$this->get_key(), rand(1, $this->context->mems())];
+            return [$this->rng_key(), rand(1, $this->context->mems())];
         } else {
-            return [$this->get_key()];
+            return [$this->rng_key()];
         }
     }
 
