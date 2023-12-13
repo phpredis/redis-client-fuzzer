@@ -6,6 +6,6 @@ use Phpredis\RedisClientFuzzer\Commands\Cmd;
 
 trait NumCmd {
     public function type(): string {
-        return 'num';
+        return 'int';
     }
 }

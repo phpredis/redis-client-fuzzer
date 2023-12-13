@@ -7,23 +7,27 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Phpredis\RedisClientFuzzer\CmdLoader;
 use Phpredis\RedisClientFuzzer\Stats;
 
-$opt = getopt('', ['class:', 'host:', 'port:', 'include:', 'exclude:', 'seed:']);
+$opt = getopt('', [
+    'class:', 'host:', 'port:', 'include:', 'exclude:', 'seed:', 'dump', 'exit-on-error'
+]);
+
 $host = $opt['host'] ?? 'localhost';
 $port = $opt['port'] ?? 7000;
 $include = array_filter(explode(',', $opt['include'] ?? ''));
 $exclude = array_filter(explode(',', $opt['exclude'] ?? ''));
 $seed = $opt['seed'] ?? hrtime(true);
-$class = $opt['class'] ?? 'relay';
+$class = strtolower($opt['class'] ?? 'relay');
+$dump = isset($opt['dump']);
+$exit_on_error = isset($opt['exit-on-error']);
 
-$context = new Commands\Context(100, 100, 0, .1, .1, .1, 0, false);
+$context = new Commands\Context(100, 100, 0, .1, .1, .1, 0, false, $dump);
 $loader = new CmdLoader;
 
 if ($class != 'redis') {
     $rc = new \Relay\Cluster(NULL, ["$host:$port"]);
 } else {
-    $rc = new RedisCluster(NULL, ["$host:$port"]);
+    $rc = new \RedisCluster(NULL, ["$host:$port"]);
 }
-
 
 $include = array_map(function ($v) { return trim(strtoupper($v)); }, $include);
 $exclude = array_map(function ($v) { return trim(strtoupper($v)); }, $exclude);
@@ -43,6 +47,11 @@ foreach ($loader->commands() as $cmd) {
 
 uasort($cmds, function ($a, $b) { return strcmp($a->cmd(), $b->cmd()); });
 
+if ( ! $cmds) {
+    fprintf(STDERR, "Error:  No commands selected, aborting!\n");
+    exit(1);
+}
+
 echo "    Class: " . get_class($rc) . "\n";
 echo "Seed Node: $host:$port\n";
 echo "  Exclude: " . ($opt['exclude'] ?? '') . "\n";
@@ -52,8 +61,7 @@ echo "     CMDS: " . implode(',', array_keys($cmds)) . "\n";
 
 srand($seed);
 
-$counts = $returns = [];
-$on = 0;
+$returns = [];
 $st = microtime(true);
 
 while (true) {
@@ -62,20 +70,20 @@ while (true) {
     $cmdname = $obj->cmd();
 
     $res = $obj->exec($rc);
-    if ($rc->getLastError())
-        die($rc->getLastError() . "\n");
+    if ($exit_on_error && $rc->getLastError()) {
+        fprintf(STDERR, "Error({$obj->cmd()}): {$rc->getLastError()}\n");
+        exit(1);
+    }
 
     if ( ! isset($returns[$cmdname]))
         $returns[$cmdname] = new Stats;
-    $returns[$cmdname]->inc($res);
+    $returns[$cmdname]->inc($res, $rc->getLastError());
+    $rc->clearLastError();
 
     if (($et = microtime(true)) - $st > 1.0) {
-        printf("Total commands: %s\n", number_format(array_sum($counts)));
         foreach ($returns as $cmd => $stats) {
-            echo str_pad($cmd, 15) . ' ' . $stats->stats_string() . "\n";
+            fprintf(STDERR, str_pad($cmd, 15) . ' ' . $stats->stats_string() . "\n");
         }
         $st = $et;
     }
-
-    $on++;
 }

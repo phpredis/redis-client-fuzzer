@@ -5,13 +5,16 @@ namespace Phpredis\RedisClientFuzzer;
 class Stats {
     public $count = 0;
     public $false = 0;
+    public $errors = 0;
     public $true = 0;
     public $int = 0;
     public $null = 0;
     public $strlen = 0;
 
-    public function inc($res) {
+    public function inc($res, $error) {
         $this->count++;
+        if ($error)
+            $this->errors++;
 
         if ($res === false) {
             $this->false++;
@@ -29,6 +32,7 @@ class Stats {
     public function stats_string() {
         $arr = [
             'count' => $this->count,
+            'errors' => $this->errors,
             'false' => $this->false,
             'true' => $this->true,
             'int' => $this->int,

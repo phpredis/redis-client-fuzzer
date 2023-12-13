@@ -7,13 +7,16 @@ class Context {
     private int $mems;
     private bool $serialize;
     private array $knobs;
+    private bool $dump;
 
     public function __construct(int $keys, int $mems, float $wrongtype, float $write,
-                                float $del, float $flush, float $raw, bool $serialize)
+                                float $del, float $flush, float $raw, bool $serialize,
+                                bool $dump)
     {
         $this->keys = $keys;
         $this->mems = $mems;
         $this->serialize = $serialize;
+        $this->dump = $dump;
 
         $this->knobs = [
             'wrongtype' => $wrongtype,
@@ -22,6 +25,10 @@ class Context {
             'flush' => $flush,
             'raw' => $raw,
         ];
+    }
+
+    public function dump(): bool {
+        return $this->dump;
     }
 
     public function keys(): int {

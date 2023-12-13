@@ -3,8 +3,11 @@
 namespace Phpredis\RedisClientFuzzer\Commands;
 
 abstract class IncrDecrByCmd extends Cmd {
-    use Traits\NumCmd;
     use Traits\WriteCmd;
+
+    public function type(): string {
+        return is_float($this->value()) ? 'float' : 'int';
+    }
 
     public function args(): array {
         return [$this->get_key(), $this->value()];

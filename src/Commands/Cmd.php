@@ -14,7 +14,7 @@ abstract class Cmd {
     public const FLUSH_CMD = 8;
 
     public const ANY_TYPE = [
-        'num', 'geo', 'string', 'list', 'hash', 'set', 'stream', 'zset'
+        'int', 'float', 'geo', 'string', 'list', 'hash', 'set', 'stream', 'zset'
     ];
 
     public function __construct(Context $context) {
@@ -105,6 +105,10 @@ abstract class Cmd {
 
     public function exec($client): mixed {
         $args = $this->args();
+        if ($this->context->dump()) {
+            printf("call_user_func_array([%s, '%s'], %s);\n",
+                   '$rc', $this->cmd(), var_export($args, true));
+        }
         return call_user_func_array([$client, $this->cmd()], $args);
     }
 
