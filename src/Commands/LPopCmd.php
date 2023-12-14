@@ -2,8 +2,6 @@
 
 namespace Phpredis\RedisClientFuzzer\Commands;
 
-require_once __DIR__ . '/Cmd.php';
-
 class LPopCmd extends Cmd {
     use Traits\WriteCmd;
     use Traits\ListCmd;

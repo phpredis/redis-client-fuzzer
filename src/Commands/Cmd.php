@@ -2,8 +2,6 @@
 
 namespace Phpredis\RedisClientFuzzer\Commands;
 
-require_once __DIR__ . '/Context.php';
-
 use Phpredis\RedisClientFuzzer\Crc16;
 
 abstract class Cmd {
