@@ -18,7 +18,7 @@ abstract class Cmd {
     public const FLUSH_CMD = 8;
 
     public const ANY_TYPE = [
-        'int', 'float', 'geo', 'string', 'list', 'hash', 'set', 'stream', 'zset'
+        'hll', 'int', 'float', 'geo', 'string', 'list', 'hash', 'set', 'stream', 'zset'
     ];
 
     public function __construct(Context $context) {
@@ -50,6 +50,7 @@ abstract class Cmd {
             case 'string':
                 return NULL;
             case 'list':
+            case 'hll':
                 return 'element';
             case 'hash':
                 return 'field';
