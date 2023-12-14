@@ -3,7 +3,37 @@
 namespace Phpredis\RedisClientFuzzer;
 
 class CmdLoader {
-    public static function commands() {
+    private array $commands;
+
+    public function __construct(Commands\Context $context) {
+        $this->commands = self::load($context);
+    }
+
+    private function find_pattern(array $needles, string $haystack): bool {
+        foreach ($needles as $needle) {
+            if (fnmatch($needle, $haystack))
+                return true;
+        }
+
+        return false;
+    }
+
+    public function filter(array $include, array $exclude): int {
+        $filtered = 0;
+
+        foreach ($this->commands as $cmd => $obj) {
+            if (($include && ! $this->find_pattern($include, $cmd)) ||
+                $this->find_pattern($exclude, $cmd))
+            {
+                unset($this->commands[$cmd]);
+                $filtered++;
+            }
+        }
+
+        return $filtered;
+    }
+
+    private static function load(Commands\Context $context) {
         $commands = [];
 
         $path = __DIR__ . '/Commands';
@@ -20,11 +50,22 @@ class CmdLoader {
                 if (class_exists($full_name) &&
                     is_subclass_of($full_name, 'Phpredis\\RedisClientFuzzer\\Commands\Cmd'))
                 {
-                    $commands[] = $full_name;
+                    $obj = new $full_name($context);
+                    $commands[$obj->cmd()] = $obj;
                 }
             }
         }
 
+        uasort($commands, function ($a, $b) { return strcmp($a->cmd(), $b->cmd()); });
+
         return $commands;
+    }
+
+    public function commands(): array {
+        return $this->commands;
+    }
+
+    public function rng_cmd(): Commands\Cmd {
+        return $this->commands[array_rand($this->commands)];
     }
 }

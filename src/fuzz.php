@@ -41,28 +41,14 @@ if ($cluster) {
 }
 
 $context = new Commands\Context($keys, $mems, 0, .1, .1, .1, 0, false, $dump, 10);
-$loader = new CmdLoader;
-
+$loader = new CmdLoader($context);
 
 $include = array_map(function ($v) { return trim(strtoupper($v)); }, $include);
 $exclude = array_map(function ($v) { return trim(strtoupper($v)); }, $exclude);
 
-$cmds = [];
+$loader->filter($include, $exclude);
 
-foreach ($loader->commands() as $cmd) {
-    $obj = new $cmd($context);
-    if (array_search($obj->cmd(), $exclude) !== false) {
-        continue;
-    } else if ($include && array_search($obj->cmd(), $include) === false) {
-        continue;
-    }
-
-    $cmds[$obj->cmd()] = $obj;
-}
-
-uasort($cmds, function ($a, $b) { return strcmp($a->cmd(), $b->cmd()); });
-
-if ( ! $cmds) {
+if ( ! $loader->commands()) {
     fprintf(STDERR, "Error:  No commands selected, aborting!\n");
     exit(1);
 }
@@ -75,7 +61,7 @@ echo " RNG Seed: " . $seed . "\n";
 echo "  Cluster: " . ($cluster ? 'yes' : 'no') . "\n";
 echo "     Keys: " . number_format($keys) . "\n";
 echo "     Mems: " . number_format($mems) . "\n";
-echo "     CMDS: " . implode(',', array_keys($cmds)) . "\n";
+echo "     CMDS: " . implode(',', array_keys($loader->commands())) . "\n";
 
 srand($seed);
 
@@ -83,9 +69,8 @@ $returns = [];
 $st = microtime(true);
 
 while (true) {
-    $obj = $cmds[array_rand($cmds)];
-
-    $cmdname = $obj->cmd();
+    $obj = $loader->rng_cmd();
+    $cmd = $obj->cmd();
 
     if ( ! method_exists($client, $obj->cmd()))
         continue;
@@ -97,9 +82,9 @@ while (true) {
         exit(1);
     }
 
-    if ( ! isset($returns[$cmdname]))
-        $returns[$cmdname] = new Stats($cmdname);
-    $returns[$cmdname]->inc($res, $client->getLastError());
+    if ( ! isset($returns[$cmd]))
+        $returns[$cmd] = new Stats($cmd);
+    $returns[$cmd]->inc($res, $client->getLastError());
     $client->clearLastError();
 
     if (($et = microtime(true)) - $st > 1.0) {

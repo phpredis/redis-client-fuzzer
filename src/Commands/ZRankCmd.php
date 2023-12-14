@@ -2,4 +2,5 @@
 
 namespace Phpredis\RedisClientFuzzer\Commands;
 
-class ZRevRankCmd extends ZRankRevRankCmd { }
+class ZRankCmd extends ZRankRevRankCmd { }
+
