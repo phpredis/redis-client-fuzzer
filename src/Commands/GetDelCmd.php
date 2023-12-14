@@ -2,7 +2,7 @@
 
 namespace Phpredis\RedisClientFuzzer\Commands;
 
-class SetCmd extends KeyValCmd {
-    use Traits\WriteCmd;
+class GetDelCmd extends KeyCmd {
     use Traits\StringCmd;
+    use Traits\WriteCmd;
 }

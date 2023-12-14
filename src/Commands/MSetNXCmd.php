@@ -2,4 +2,5 @@
 
 namespace Phpredis\RedisClientFuzzer\Commands;
 
-class MSetCmd extends MSetGenericCmd { }
+class MSetNXCmd extends MSetGenericCmd { }
+

@@ -87,6 +87,9 @@ while (true) {
 
     $cmdname = $obj->cmd();
 
+    if ( ! method_exists($client, $obj->cmd()))
+        continue;
+
     $res = $obj->exec($client);
 
     if ($exit_on_error && $client->getLastError()) {
