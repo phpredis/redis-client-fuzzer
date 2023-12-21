@@ -10,8 +10,11 @@ class LPosCmd extends Cmd {
         $args = [$this->rng_key(), $this->rng_mem()];
 
         if ($this->rng_choice()) {
-            if ($this->rng_choice())
-                $opts['rank'] = $this->rng() % $this->context->mems();
+            if ($this->rng_choice()) {
+                $rank = $this->rng() % $this->context->mems();
+                if ($rank == 0) $rank = -1 * $this->context->mems();
+                $opts['rank'] = $rank;
+            }
             if ($this->rng_choice())
                 $opts['count'] = $this->rng() % $this->context->mems();
             if ($this->rng_choice())

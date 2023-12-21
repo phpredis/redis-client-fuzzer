@@ -2,4 +2,4 @@
 
 namespace Phpredis\RedisClientFuzzer\Commands;
 
-class LPopCmd extends LRPopCmd { }
+class RPopCmd extends LRPopCmd { }
