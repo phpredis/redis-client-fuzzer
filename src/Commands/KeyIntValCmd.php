@@ -6,7 +6,7 @@ abstract class KeyIntValCmd extends Cmd {
     abstract public function get_int(): int;
 
     public function args(): array {
-        return [$this->rng_key(), $this->get_int(), $this->get_val()];
+        return [$this->rng_key(), $this->get_int(), $this->rng_val()];
     }
 
     public function raw_args(): array {

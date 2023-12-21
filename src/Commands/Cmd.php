@@ -80,7 +80,7 @@ abstract class Cmd {
         return $this->get_key(rand(0, $this->context->keys() - 1));
     }
 
-    public function get_val(): mixed {
+    public function rng_val(): mixed {
         $dlen = $this->context->strlen() / 2;
         if ($dlen % 2 != 0)
             $dlen++;

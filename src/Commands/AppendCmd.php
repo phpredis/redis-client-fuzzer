@@ -7,7 +7,7 @@ class AppendCmd extends Cmd {
     use Traits\StringCmd;
 
     public function args(): array {
-        return [$this->rng_key(), $this->get_val()];
+        return [$this->rng_key(), $this->rng_val()];
     }
 
     public function raw_args(): array {
