@@ -65,7 +65,7 @@ abstract class Cmd {
         }
     }
 
-    private function mem_type(): string {
+    protected function mem_type(): string {
         switch ($this->key_type()) {
             case 'string':
                 return NULL;
@@ -82,6 +82,18 @@ abstract class Cmd {
             default:
                 die("Error:  Unknown key type '{$this->key_type()}'\n");
         }
+    }
+
+    public function rng_lex_range(): array {
+        $base = $this->mem_type();
+
+        $lo = rand(0, $this->context->mems());
+        $hi = $lo + rand(0, $this->context->mems() - $lo);
+
+        return [
+            ($this->rng_choice() ? '[' : '(') . "$base:$lo",
+            ($this->rng_choice() ? '[' : '(') . "$base:$hi"
+        ];
     }
 
     function rng_float($min = 0, $max = 1) {
