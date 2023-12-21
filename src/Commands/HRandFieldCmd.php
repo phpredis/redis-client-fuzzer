@@ -8,8 +8,8 @@ class HRandFieldCmd extends Cmd {
 
     /* Map our random number to an HRANDFIELD like count which can be
      * negative (of any value) or positive). */
-    protected function rng_count($rng, $limit): int {
-        return round(($rng / mt_getrandmax() * 2 * $limit) - $limit);
+    protected function rng_count($limit): int {
+        return round(($this->rng() / $this->rng_max() * 2 * $limit) - $limit);
     }
 
     public function args(): array {
@@ -17,11 +17,11 @@ class HRandFieldCmd extends Cmd {
 
         $rng = mt_rand();
 
-        if (($rng & (1 << 0)) !== 0) {
-            if (($rng & (1 << 1)) !== 0) {
-                $opts['count'] = $this->rng_count($rng, $this->context->mems() * 2);
-                if ($opts['count'] > 0 && ($rng & (1 << 2)) !== 0)
-                    $opts['withvalues'] = ($rng & (1 << 3)) != 0;
+        if ($this->rng_choice()) {
+            if ($this->rng_choice()) {
+                $opts['count'] = $this->rng_count($this->context->mems() * 2);
+                if ($opts['count'] > 0 && $this->rng_choice());
+                    $opts['withvalues'] = $this->rng_choice();
             }
 
             if ( ! isset($opts))

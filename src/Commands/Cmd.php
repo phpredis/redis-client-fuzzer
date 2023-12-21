@@ -5,15 +5,17 @@ namespace Phpredis\RedisClientFuzzer\Commands;
 use Phpredis\RedisClientFuzzer\Crc16;
 
 abstract class Cmd {
-    protected $context;
-    private $cmd_name = NULL;
-
-    private $keys_by_slot = NULL;
-
     public const READ_CMD  = 1;
     public const WRITE_CMD = 2;
     public const DEL_CMD   = 4;
     public const FLUSH_CMD = 8;
+
+    protected $context;
+    private $cmd_name = NULL;
+    private $keys_by_slot = NULL;
+
+    private int $rng;
+    private int $rng_bit;
 
     public const ANY_TYPE = [
         'hll', 'int', 'float', 'geo', 'string', 'list', 'hash', 'set', 'stream', 'zset'
@@ -21,6 +23,26 @@ abstract class Cmd {
 
     public function __construct(Context $context) {
         $this->context = $context;
+        $this->rng = mt_rand();
+        $this->rng_bit = 0;
+    }
+
+    public function rng(): int {
+        if ($this->rng === NULL)
+            $this->rng = mt_rand();
+
+        return $this->rng;
+    }
+
+    public function rng_max(): int {
+        return mt_getrandmax();
+    }
+
+    public function rng_choice(): bool {
+        if ($this->rng === NULL || ($this->rng_bit && $this->rng_bit % 32 == 0))
+            $this->rng = mt_rand();
+
+        return (($this->rng & (1 << ($this->rng_bit++ % 32))) != 0);
     }
 
     public function wrong_type() {
