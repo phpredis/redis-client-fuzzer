@@ -55,6 +55,8 @@ abstract class Cmd {
             case 'set':
             case 'zset':
                 return 'member';
+            case 'geo':
+                return 'position';
             default:
                 die("Error:  Unknown key type '{$this->key_type()}'\n");
         }
