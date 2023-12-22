@@ -7,7 +7,7 @@ class SInterCardCmd extends Cmd {
     use Traits\ReadCmd;
 
     public function args(): array {
-        $args = [$this->rng_key()];
+        $args = [$this->rng_keys()];
         if ($this->rng_choice())
             $args[] = $this->rng() % (10 * $this->context->mems());
 
@@ -16,13 +16,5 @@ class SInterCardCmd extends Cmd {
 
     public function raw_args(): array {
         return $this->args();
-    }
-
-    public function cluster_args(): array {
-        $args = [$this->rng_slot_keys()];
-        if ($this->rng_choice())
-            $args[] = $this->rng() % (10 * $this->context->mems());
-
-        return $args;
     }
 }

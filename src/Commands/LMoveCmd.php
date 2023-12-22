@@ -13,8 +13,7 @@ class LMoveCmd extends Cmd {
     }
 
     public function args(): array {
-        list($src, $dst) = $this->rng_slot_key_pair();
-        return [$src, $dst, $this->rng_pos(), $this->rng_pos()];
+        return [$this->rng_key(), $this->rng_key(), $this->rng_pos(), $this->rng_pos()];
     }
 
     public function raw_args(): array {

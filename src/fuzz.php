@@ -13,7 +13,8 @@ $opt = getopt('', [
 
 $host = $opt['host'] ?? 'localhost';
 $port = $opt['port'] ?? 7000;
-$keys = $opt['keys'] ?? 1000;
+$keys = $opt['keys'] ?? 500;
+$shards = $opt['shards'] ?? 32;
 $mems = $opt['mems'] ?? 100;
 $include = array_filter(explode(',', $opt['include'] ?? ''));
 $exclude = array_filter(explode(',', $opt['exclude'] ?? ''));
@@ -40,7 +41,7 @@ if ($cluster) {
     }
 }
 
-$context = new Commands\Context($keys, $mems, 0, .1, .1, .1, 0, false, $dump, 10);
+$context = new Commands\Context($keys, $shards, $mems, 0, .1, .1, .1, 0, false, $dump, 10);
 $loader = new CmdLoader($context);
 
 $include = array_map(function ($v) { return trim(strtoupper($v)); }, $include);

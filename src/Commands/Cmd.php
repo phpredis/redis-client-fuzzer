@@ -13,6 +13,7 @@ abstract class Cmd {
     protected $context;
     private $cmd_name = NULL;
     private $keys_by_slot = NULL;
+    private int $shard;
 
     private int $rng;
     private int $rng_bit;
@@ -23,6 +24,7 @@ abstract class Cmd {
 
     public function __construct(Context $context) {
         $this->context = $context;
+        $this->shard = rand(0, $this->context->shards() - 1);
         $this->rng = mt_rand();
         $this->rng_bit = 0;
     }
@@ -100,8 +102,9 @@ abstract class Cmd {
         return $min + mt_rand() / mt_getrandmax() * ($max - $min);
     }
 
-    public function get_key(int $id): string {
-        return sprintf("%s:%d", $this->key_type(), $id);
+    public function get_key(int $id, bool $anyshard = false): string {
+        $shard = $anyshard ? rand(0, $this->context->shards() - 1) : $this->shard;
+        return sprintf("{%s:%d}:%d", $this->key_type(), $shard, $id);
     }
 
     public function get_mem(int $id): string {
@@ -112,8 +115,8 @@ abstract class Cmd {
         return $this->get_mem(rand(0, $this->context->mems() - 1));
     }
 
-    public function rng_key(): string {
-        return $this->get_key(rand(0, $this->context->keys() - 1));
+    public function rng_key(bool $anyshard = false): string {
+        return $this->get_key(rand(0, $this->context->keys() - 1), $anyshard);
     }
 
     public function rng_val(): mixed {
@@ -128,50 +131,21 @@ abstract class Cmd {
             return str_split($data, $this->context->strlen() / 4);
     }
 
-    public function rng_keys(): array {
+    public function rng_keys(bool $anyshard = false): array {
         $res = [];
 
         $count = rand(1, $this->context->keys() - 1);
         $ids = range(0, $count - 1);
 
         for ($i = 0; $i < rand(1, $this->context->keys() - 1); $i++) {
-            $res[] = $this->rng_key();
+            $res[] = $this->rng_key($anyshard);
         }
 
         return $res;
     }
 
-    private function calc_slot_keys(): array {
-        $res = [];
-
-        for ($i = 0; $i < $this->context->keys(); $i++) {
-            $key = $this->get_key($i);
-            $res[$this->get_slot($key)][] = $key;
-        }
-
-        return $res;
-    }
-
-    /* Return two keys that will live in the same slot */
-    public function rng_slot_key_pair(): array {
-        $key1 = $this->rng_key();
-        $key2 = sprintf("{%s}-dst", $key1);
-        $keys = [$key1, $key2];
-
-        shuffle($keys);
-
-        return $keys;
-    }
-
-    public function rng_slot_keys(): array {
-        if ($this->keys_by_slot === NULL)
-            $this->keys_by_slot = $this->calc_slot_keys();
-
-        return $this->keys_by_slot[array_rand($this->keys_by_slot)];
-    }
-
-    private function get_slot($key) {
-        return Crc16::hash($key) % 16384;
+    public function rng_xslot_keys(): array {
+        return $this->rng_keys(true);
     }
 
     public function rng_mems() {

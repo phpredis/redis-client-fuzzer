@@ -7,7 +7,7 @@ abstract class SInterDiffUnionCmd extends Cmd {
     use Traits\SetCmd;
 
     public function args(): array {
-        return $this->rng_slot_keys();
+        return $this->rng_keys();
     }
 
     public function raw_args(): array {

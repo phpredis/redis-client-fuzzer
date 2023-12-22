@@ -7,7 +7,7 @@ class ZDiffCmd extends Cmd {
     use Traits\ZSetCmd;
 
     public function args(): array {
-        $args = [$this->rng_slot_keys()];
+        $args = [$this->rng_keys()];
         if ($this->rng_choice()) {
             $opts = [];
             if ($this->rng_choice())

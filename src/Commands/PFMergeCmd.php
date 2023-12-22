@@ -13,11 +13,4 @@ class PFMergeCmd extends Cmd {
     public function raw_args(): array {
         return $this->args();
     }
-
-    public function cluster_args(): array {
-        $keys = $this->rng_slot_keys();
-        $key0 = sprintf('{%s}-merge', $keys[0]);
-
-        return [$key0, $keys];
-    }
 }

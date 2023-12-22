@@ -4,21 +4,24 @@ namespace Phpredis\RedisClientFuzzer\Commands;
 
 class Context {
     private int $keys;
+    private int $shards;
     private int $mems;
     private int $strlen;
     private bool $serialize;
     private array $knobs;
     private bool $dump;
 
-    public function __construct(int $keys, int $mems, float $wrongtype, float $write,
+    public function __construct(int $keys, int $shards, int $mems, float $wrongtype, float $write,
                                 float $del, float $flush, float $raw, bool $serialize,
                                 bool $dump, int $strlen)
     {
         $this->keys = $keys;
+        $this->shards = $shards;
         $this->mems = $mems;
         $this->serialize = $serialize;
         $this->dump = $dump;
         $this->strlen = max(10, $strlen);
+
         if ($this->strlen % 2 != 0)
             $this->strlen++;
 
@@ -37,6 +40,10 @@ class Context {
 
     public function keys(): int {
         return $this->keys;
+    }
+
+    public function shards(): int {
+        return $this->shards;
     }
 
     public function mems(): int {
