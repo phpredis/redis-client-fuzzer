@@ -2,4 +2,5 @@
 
 namespace Phpredis\RedisClientFuzzer\Commands;
 
-class ZUnionCmd extends ZInterUnionCmd { }
+class ZInterCmd extends ZInterUnionCmd { }
+
