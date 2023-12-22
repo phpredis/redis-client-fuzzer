@@ -22,9 +22,13 @@ abstract class Cmd {
         'hll', 'int', 'float', 'geo', 'string', 'list', 'hash', 'set', 'stream', 'zset'
     ];
 
+    protected function gen_shard(): int {
+        return rand(0, $this->context->shards() - 1);
+    }
+
     public function __construct(Context $context) {
         $this->context = $context;
-        $this->shard = rand(0, $this->context->shards() - 1);
+        $this->shard = $this->gen_shard();
         $this->rng = mt_rand();
         $this->rng_bit = 0;
     }
@@ -176,10 +180,13 @@ abstract class Cmd {
     public function exec($client): mixed {
         $args = $this->is_cluster($client) ? $this->cluster_args() : $this->args();
 
+        $this->shard = $this->gen_shard();
+
         if ($this->context->dump()) {
             printf("call_user_func_array([%s, '%s'], %s);\n",
                    '$rc', $this->cmd(), var_export($args, true));
         }
+
         return call_user_func_array([$client, $this->cmd()], $args);
     }
 

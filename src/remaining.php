@@ -6,7 +6,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Phpredis\RedisClientFuzzer\CmdLoader;
 
-$context = new Commands\Context(100, 100, 0, .1, .1, .1, 0, false, false, 0);
+$context = new Commands\Context(100, 10, 100, 0, .1, .1, .1, 0, false, false, 0);
 $loader = new CmdLoader($context);
 
 $redis = new \Redis; $redis->connect('localhost', 6379);
