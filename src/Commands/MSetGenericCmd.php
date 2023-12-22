@@ -8,9 +8,10 @@ abstract class MSetGenericCmd extends Cmd {
 
     public function rng_key_vals(): array {
         $kv = [];
-        foreach ($this->rng_keys() as $key) {
+        foreach ($this->rng_xslot_keys() as $key) {
             $kv[$key] = $this->rng_val();
         }
+
         return $kv;
     }
 
