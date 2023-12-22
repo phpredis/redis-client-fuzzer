@@ -7,6 +7,17 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Phpredis\RedisClientFuzzer\CmdLoader;
 use Phpredis\RedisClientFuzzer\Stats;
 
+function warnMissingMethod($client, $method) {
+    static $warned = [];
+
+    if (isset($warned[$method]))
+        return;
+
+    $warned[$method] = true;
+    fprintf(STDERR, "Warning: %s doesn't have method '%s'\n",
+            get_class($client), $method);
+}
+
 $opt = getopt('', [
     'keys:', 'mems:', 'class:', 'host:', 'port:', 'include:', 'exclude:', 'seed:', 'dump', 'exit-on-error'
 ]);
@@ -73,8 +84,10 @@ while (true) {
     $obj = $loader->rng_cmd();
     $cmd = $obj->cmd();
 
-    if ( ! method_exists($client, $obj->cmd()))
+    if ( ! method_exists($client, $obj->cmd())) {
+        warnMissingMethod($client, $obj->cmd());
         continue;
+    }
 
     $res = $obj->exec($client);
 

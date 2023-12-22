@@ -9,6 +9,7 @@ abstract class Cmd {
     public const WRITE_CMD = 2;
     public const DEL_CMD   = 4;
     public const FLUSH_CMD = 8;
+    public const BLOCKING_CMD = 16;
 
     protected $context;
     private $cmd_name = NULL;
