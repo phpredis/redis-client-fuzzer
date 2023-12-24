@@ -103,8 +103,8 @@ abstract class Cmd {
         ];
     }
 
-    function rng_float($min = 0, $max = 1) {
-        return $min + mt_rand() / mt_getrandmax() * ($max - $min);
+    function rng_float($min = 0, $max = 1, int $precision = 4) {
+        return round($min + mt_rand() / mt_getrandmax() * ($max - $min), $precision);
     }
 
     public function get_key(int $id, bool $anyshard = false): string {
